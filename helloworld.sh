@@ -1,1 +1,2 @@
-echo "hello world"
+MSG=${MSG:="hello world"}
+echo $MSG
