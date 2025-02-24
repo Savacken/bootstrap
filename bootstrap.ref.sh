@@ -200,32 +200,33 @@ run_dotfile_scripts() {
 
 [ "$USER" = "root" ] && abort "Run bootstrap.sh as yourself, not root."
 
-# shellcheck disable=SC2086
-if [ "$MACOS" -gt 0 ] && [ "$STRAP_ADMIN" -gt 0 ]; then
-  [ "$STRAP_CI" -eq 0 ] && caffeinate -s -w $$ &
-  groups | grep $Q -E "\b(admin)\b" || abort "Add $USER to admin."
-  logn "Configuring security settings:"
-  SAFARI="com.apple.Safari"
-  sudo_askpass defaults write $SAFARI \
-    $SAFARI.ContentPageGroupIdentifier.WebKit2JavaEnabled -bool false
-  sudo_askpass defaults write $SAFARI \
-    $SAFARI.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles \
-    -bool false
-  sudo_askpass defaults write com.apple.screensaver askForPassword -int 1
-  sudo_askpass defaults write com.apple.screensaver askForPasswordDelay -int 0
-  sudo_askpass defaults write \
-    /Library/Preferences/com.apple.alf globalstate -int 1
-  sudo_askpass launchctl load \
-    /System/Library/LaunchDaemons/com.apple.alf.agent.plist 2>/dev/null
-  if [ -n "$STRAP_GIT_NAME" ] && [ -n "$STRAP_GIT_EMAIL" ]; then
-    FOUND="Found this computer? Please contact"
-    LOGIN_TEXT=$(escape "$FOUND $STRAP_GIT_NAME at $STRAP_GIT_EMAIL.")
-    echo "$LOGIN_TEXT" | grep -q '[()]' && LOGIN_TEXT="'$LOGIN_TEXT'"
-    sudo_askpass defaults write \
-      /Library/Preferences/com.apple.loginwindow LoginwindowText "$LOGIN_TEXT"
-    logk
-  fi
-fi
+# Disabling because I don't think I want these changes
+## shellcheck disable=SC2086
+#if [ "$MACOS" -gt 0 ] && [ "$STRAP_ADMIN" -gt 0 ]; then
+#  [ "$STRAP_CI" -eq 0 ] && caffeinate -s -w $$ &
+#  groups | grep $Q -E "\b(admin)\b" || abort "Add $USER to admin."
+#  logn "Configuring security settings:"
+#  SAFARI="com.apple.Safari"
+#  sudo_askpass defaults write $SAFARI \
+#    $SAFARI.ContentPageGroupIdentifier.WebKit2JavaEnabled -bool false
+#  sudo_askpass defaults write $SAFARI \
+#    $SAFARI.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles \
+#    -bool false
+#  sudo_askpass defaults write com.apple.screensaver askForPassword -int 1
+#  sudo_askpass defaults write com.apple.screensaver askForPasswordDelay -int 0
+#  sudo_askpass defaults write \
+#    /Library/Preferences/com.apple.alf globalstate -int 1
+#  sudo_askpass launchctl load \
+#    /System/Library/LaunchDaemons/com.apple.alf.agent.plist 2>/dev/null
+#  if [ -n "$STRAP_GIT_NAME" ] && [ -n "$STRAP_GIT_EMAIL" ]; then
+#    FOUND="Found this computer? Please contact"
+#    LOGIN_TEXT=$(escape "$FOUND $STRAP_GIT_NAME at $STRAP_GIT_EMAIL.")
+#    echo "$LOGIN_TEXT" | grep -q '[()]' && LOGIN_TEXT="'$LOGIN_TEXT'"
+#    sudo_askpass defaults write \
+#      /Library/Preferences/com.apple.loginwindow LoginwindowText "$LOGIN_TEXT"
+#    logk
+#  fi
+#fi
 
 # Check for and enable full-disk encryption
 if [ "$MACOS" -eq 0 ] || [ "$STRAP_ADMIN" -eq 0 ] || [ "$STRAP_CI" -gt 0 ]; then
@@ -347,17 +348,18 @@ configure_git() {
     [ "$(git config --global github.user)" != "$STRAP_GITHUB_USER" ]; then
     git config --global github.user "$STRAP_GITHUB_USER"
   fi
-  # Set up GitHub HTTPS credentials
-  # shellcheck disable=SC2086
-  if [ -n "$STRAP_GITHUB_USER" ] && [ -n "$STRAP_GITHUB_TOKEN" ]; then
-    PROTOCOL="protocol=https\\nhost=github.com"
-    printf "%s\\n" "$PROTOCOL" | git credential reject
-    printf "%s\\nusername=%s\\npassword=%s\\n" \
-      "$PROTOCOL" "$STRAP_GITHUB_USER" "$STRAP_GITHUB_TOKEN" |
-      git credential approve
-  else
-    logskip "Skipping Git credential setup."
-  fi
+  # Not using https token credentials
+  ## Set up GitHub HTTPS credentials
+  ## shellcheck disable=SC2086
+  #if [ -n "$STRAP_GITHUB_USER" ] && [ -n "$STRAP_GITHUB_TOKEN" ]; then
+  #  PROTOCOL="protocol=https\\nhost=github.com"
+  #  printf "%s\\n" "$PROTOCOL" | git credential reject
+  #  printf "%s\\nusername=%s\\npassword=%s\\n" \
+  #    "$PROTOCOL" "$STRAP_GITHUB_USER" "$STRAP_GITHUB_TOKEN" |
+  #    git credential approve
+  #else
+  #  logskip "Skipping Git credential setup."
+  #fi
   logk
 }
 
@@ -365,28 +367,28 @@ configure_git() {
 configure_git
 
 # Set up dotfiles
-# shellcheck disable=SC2086
-if [ ! -d "$HOME/.dotfiles" ]; then
-  if [ -z "$STRAP_DOTFILES_URL" ] || [ -z "$STRAP_DOTFILES_BRANCH" ]; then
-    abort "Please set STRAP_DOTFILES_URL and STRAP_DOTFILES_BRANCH."
-  fi
-  log_no_sudo "Cloning $STRAP_DOTFILES_URL to $HOME/.dotfiles."
-  git clone $Q "$STRAP_DOTFILES_URL" "$HOME/.dotfiles"
-fi
-strap_dotfiles_branch_name="${STRAP_DOTFILES_BRANCH##*/}"
-log_no_sudo "Checking out $strap_dotfiles_branch_name in $HOME/.dotfiles."
-# shellcheck disable=SC2086
-(
-  cd "$HOME/.dotfiles"
-  git stash
-  git fetch $Q
-  git checkout "$strap_dotfiles_branch_name"
-  git pull $Q --rebase --autostash
-)
-run_dotfile_scripts scripts/symlink.sh
-# The second call to `configure_git` is needed for CI use cases in which some
-# aspects of the `.gitconfig` cannot be used after cloning the dotfiles repo.
-configure_git
+## shellcheck disable=SC2086
+#if [ ! -d "$HOME/.dotfiles" ]; then
+#  if [ -z "$STRAP_DOTFILES_URL" ] || [ -z "$STRAP_DOTFILES_BRANCH" ]; then
+#    abort "Please set STRAP_DOTFILES_URL and STRAP_DOTFILES_BRANCH."
+#  fi
+#  log_no_sudo "Cloning $STRAP_DOTFILES_URL to $HOME/.dotfiles."
+#  git clone $Q "$STRAP_DOTFILES_URL" "$HOME/.dotfiles"
+#fi
+#strap_dotfiles_branch_name="${STRAP_DOTFILES_BRANCH##*/}"
+#log_no_sudo "Checking out $strap_dotfiles_branch_name in $HOME/.dotfiles."
+## shellcheck disable=SC2086
+#(
+#  cd "$HOME/.dotfiles"
+#  git stash
+#  git fetch $Q
+#  git checkout "$strap_dotfiles_branch_name"
+#  git pull $Q --rebase --autostash
+#)
+#run_dotfile_scripts scripts/symlink.sh
+## The second call to `configure_git` is needed for CI use cases in which some
+## aspects of the `.gitconfig` cannot be used after cloning the dotfiles repo.
+#configure_git
 logk
 
 # shellcheck disable=SC2086
@@ -533,9 +535,10 @@ if [ "$STRAP_SUDO" -gt 0 ]; then
     logk
   elif [ "$LINUX" -gt 0 ]; then
     # https://docs.brew.sh/Homebrew-on-Linux
-    log "Installing Homebrew on Linux"
-    run_dotfile_scripts scripts/linuxbrew.sh
-    logk
+    # disabled because dotfiles not available yet
+    #log "Installing Homebrew on Linux"
+    #run_dotfile_scripts scripts/linuxbrew.sh
+    #logk
   else
     abort "Unsupported operating system $OS"
   fi
@@ -543,7 +546,7 @@ if [ "$STRAP_SUDO" -gt 0 ]; then
   brew cleanup
 fi
 
-run_dotfile_scripts scripts/strap-after-setup.sh
+#run_dotfile_scripts scripts/strap-after-setup.sh
 
 STRAP_SUCCESS=1
 log_no_sudo "Your system is now bootstrapped!"
