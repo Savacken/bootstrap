@@ -24,8 +24,8 @@ if groups | grep -qE "\b(admin)\b"; then STRAP_ADMIN=1; else STRAP_ADMIN=0; fi
 export STRAP_ADMIN
 
 # Variables to be used for configuring Git
-STRAP_GIT_NAME=${STRAP_GIT_NAME:?Variable not set}
-STRAP_GIT_EMAIL=${STRAP_GIT_EMAIL:?Variable not set}
+#STRAP_GIT_NAME=${STRAP_GIT_NAME:?Variable not set}
+#STRAP_GIT_EMAIL=${STRAP_GIT_EMAIL:?Variable not set}
 # Variables to be used for getting dotfiles
 STRAP_GITHUB_USER=${STRAP_GITHUB_USER:="Savacken"}
 DEFAULT_DOTFILES_URL="https://github.com/$STRAP_GITHUB_USER/.dotfiles"
