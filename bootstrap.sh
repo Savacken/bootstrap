@@ -54,7 +54,7 @@ PROMPT="$PROMPT\n  * XCode Command Line Tools"
 # PROMPT="$PROMPT\n  * Github CLI (required to access dotfiles)"
 PROMPT="$PROMPT\nThis will require your admin password. Reply "y" to continue: "
 read -p "$PROMPT" -n 1 -r
-if [[ $REPLY =~ ^[Yy]$ ]]
+if [[ $REPLY =~ ^[Yy]$ ]]; then
   # install Homebrew, includes XCode Command Line Tools
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   # and add to PATH
