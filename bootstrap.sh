@@ -59,8 +59,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   # install Homebrew, includes XCode Command Line Tools
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   # and add to PATH
-  PATTERN='eval "\$\(/opt/homebrew/bin/brew shellenv)"'
-  if ! grep -q $PATTERN ~/.zprofile; then
+  if ! grep -F 'eval "$(/opt/homebrew/bin/brew shellenv)"' ~/.zprofile; then
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
     eval "$(/opt/homebrew/bin/brew shellenv)"
   fi
