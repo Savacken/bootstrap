@@ -60,6 +60,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   # and add to PATH
   if ! grep -F 'eval "$(/opt/homebrew/bin/brew shellenv)"' ~/.zprofile; then
+    echo "Did not find brew in PATH"
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
     eval "$(/opt/homebrew/bin/brew shellenv)"
   fi
