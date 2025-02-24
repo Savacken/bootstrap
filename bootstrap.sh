@@ -48,8 +48,20 @@ logskip() {
 
 [ "$USER" = "root" ] && abort "Run bootstrap.sh as yourself, not root."
 
-# install Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-# and add to PATH
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
+PROMPT="This script will install, or update;"
+PROMPT="$PROMPT\n  * Homebrew"
+PROMPT="$PROMPT\n  * XCode Command Line Tools"
+# PROMPT="$PROMPT\n  * Github CLI (required to access dotfiles)"
+PROMPT="$PROMPT\nThis will require your admin password. Reply "y" to continue: "
+read -p $PROMPT -n 1 -r
+if [[ $REPLY =~ ^[Yy]$ ]]
+  # install Homebrew, includes XCode Command Line Tools
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  # and add to PATH
+  PATTERN='eval "$(/opt/homebrew/bin/brew shellenv)"'
+  if ! grep -q $PATTERN ~/.zprofile; then
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+  # brew install gh
+fi
