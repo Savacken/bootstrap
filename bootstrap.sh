@@ -77,5 +77,5 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cd ~/.dotfiles
     git pull
   fi
-  ./.dotfiles/install
+  ~/.dotfiles/install
 fi
