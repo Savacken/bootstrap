@@ -48,9 +48,10 @@ logskip() {
 
 [ "$USER" = "root" ] && abort "Run bootstrap.sh as yourself, not root."
 
-PROMPT="This script will install, or update;
+PROMPT="This script will install or update;
   * Homebrew
   * XCode Command Line Tools
+  * Github CLI
 This will require your admin password. Reply 'y' to continue: "
 # PROMPT="$PROMPT\n  * Github CLI (required to access dotfiles)"
 read -p "$PROMPT" -n 1 -r
@@ -60,9 +61,18 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   # and add to PATH
   if ! grep -F 'eval "$(/opt/homebrew/bin/brew shellenv)"' ~/.zprofile; then
-    echo "Did not find brew in PATH"
+    echo "Adding brew toPATH"
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
     eval "$(/opt/homebrew/bin/brew shellenv)"
   fi
-  # brew install gh
+  if ! command -v gh &> /dev/null; then
+    brew install gh
+    gh auth login
+  fi
+  cd $HOME
+  if ! [ -d ~/.dotfiles ]; then
+    echo "Installing dotfile"
+    gh repo clone .dotfiles
+  fi
+  ./.dotfiles/install
 fi
