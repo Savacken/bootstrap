@@ -73,6 +73,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   if ! [ -d ~/.dotfiles ]; then
     echo "Installing dotfile"
     gh repo clone .dotfiles
+  else
+    cd ~/.dotfles
+    git pull
   fi
   ./.dotfiles/install
 fi
